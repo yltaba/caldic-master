@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 from io import BytesIO
 
+st.set_option('server.maxUploadSize', 400)
+
 st.title("Gerador base consolidada Master")
 st.subheader("Caldic LATAM - FP&A")
 
@@ -86,7 +88,6 @@ if uploaded_file and st.button('Consolidar arquivos'):
         df = pd.concat([actual, forecast, budget, actual22], axis=0)
         df['month'] = pd.to_datetime(df['month']).dt.strftime('%d-%m-%Y')
 
-        st.dataframe(df)
 
         # EXPORT EXCEL
         df.to_excel('dados_master_consolidado.xlsx', index=False)
@@ -95,7 +96,9 @@ if uploaded_file and st.button('Consolidar arquivos'):
         df.to_excel(towrite, index=False)
         towrite.seek(0) 
 
-        st.download_button(label="📥 Download Final Excel",
+        st.dataframe(df)
+
+        st.download_button(label="📥 Download Excel Consolidado",
                         data=towrite,
                         file_name='dados_master_consolidado.xlsx',
                         mime="application/vnd.ms-excel")
