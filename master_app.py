@@ -92,14 +92,15 @@ if uploaded_file and st.button('Consolidar arquivos'):
         df = df.loc[~((df.Line == 'Non-recurring') & (df.usd_000 > 0))].copy()
 
 
-# EXPORT EXCEL
-towrite = BytesIO()
-df.to_excel(towrite, index=False)
-towrite.seek(0)
+        # EXPORT EXCEL
+        towrite = BytesIO()
+        df.to_excel(towrite, index=False)
+        towrite.seek(0)
 
-st.dataframe(df)
-
-st.download_button(label="📥 Download Excel Consolidado",
+        st.download_button(label="📥 Download Excel Consolidado",
                 data=towrite,
                 file_name='dados_master_consolidado.xlsx',
                 mime="application/vnd.ms-excel")
+
+st.dataframe(df)
+
