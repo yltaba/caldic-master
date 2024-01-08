@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from io import BytesIO
 
-st.set_option('server.maxUploadSize', 400)
+# st.set_option('server.maxUploadSize', 400)
 
 st.title("Gerador base consolidada Master")
 st.subheader("Caldic LATAM - FP&A")
