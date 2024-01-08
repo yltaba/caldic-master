@@ -26,12 +26,12 @@ def tratar_master(uploaded_file, sheet_name, range_cols, origem):
         uploaded_file,
         sheet_name,
         header = 1,
-        skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10,11],
+        skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
         nrows = 133,
         usecols = range_cols
     )
 
-    df.dropna(axis ='index', how='all', inplace = True)
+    df = df.dropna(axis ='index', how='all')
 
     df['Type'] = origem
 
@@ -41,18 +41,19 @@ def tratar_master(uploaded_file, sheet_name, range_cols, origem):
         df,
         id_vars=['Line', 'Type'],
         value_name='usd_000',
-        var_name='month'
+        var_name='Month'
     )
 
     return df
 
 if uploaded_file and st.button('Consolidar arquivos'):
     with st.spinner('Consolidando arquivos...'):
+
         # ACTUAL
         dataframes_actual = {}
         range_cols = "B,V:AG" 
         for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Actual')
+            df = tratar_master(aba, range_cols, 'Actual')
             df['nome_aba'] = aba
             dataframes_actual[aba] = df
         actual = pd.concat(dataframes_actual.values(), ignore_index=True)
@@ -61,7 +62,7 @@ if uploaded_file and st.button('Consolidar arquivos'):
         dataframes_forecast = {}
         range_cols = "B,AK:AV" 
         for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Forecast')
+            df = tratar_master(aba, range_cols, 'Forecast')
             df['nome_aba'] = aba
             dataframes_forecast[aba] = df
         forecast = pd.concat(dataframes_forecast.values(), ignore_index=True)
@@ -70,7 +71,7 @@ if uploaded_file and st.button('Consolidar arquivos'):
         dataframes_budget = {}
         range_cols = "B,AZ:BK" 
         for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Budget')
+            df = tratar_master(aba, range_cols, 'Budget')
             df['nome_aba'] = aba
             dataframes_budget[aba] = df
         budget = pd.concat(dataframes_budget.values(), ignore_index=True)
@@ -79,14 +80,16 @@ if uploaded_file and st.button('Consolidar arquivos'):
         dataframes_actual22 = {}
         range_cols = "B,BO:BZ" 
         for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Actual 2022')
+            df = tratar_master(aba, range_cols, 'Actual 2022')
             df['nome_aba'] = aba
             dataframes_actual22[aba] = df
         actual22 = pd.concat(dataframes_actual22.values(), ignore_index=True)
 
         # CONSOLIDAÇÃO 
         df = pd.concat([actual, forecast, budget, actual22], axis=0)
-        df['month'] = pd.to_datetime(df['month']).dt.strftime('%d-%m-%Y')
+        df['Month'] = pd.to_datetime(df['Month']).dt.strftime('%d-%m-%Y')
+        df = df.loc[df.usd_000 != '-'].copy()
+        df = df.loc[~((df.Line == 'Non-recurring') & (df.usd_000 > 0))].copy()
 
 
         # EXPORT EXCEL
