@@ -31,13 +31,13 @@ def tratar_master(uploaded_file, sheet_name, range_cols, origem):
 
     df.dropna(axis ='index', how='all', inplace = True)
 
-    df['type'] = origem
+    df['Type'] = origem
 
-    df = df.rename(columns={"USD 000'":'indicador'})
+    df = df.rename(columns={"USD 000'":'Line'})
 
     df  = pd.melt(
         df,
-        id_vars=['indicador', 'type'],
+        id_vars=['Line', 'Type'],
         value_name='usd_000',
         var_name='month'
     )
