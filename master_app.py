@@ -93,8 +93,6 @@ if uploaded_file and st.button('Consolidar arquivos'):
 
 
         # EXPORT EXCEL
-        df.to_excel('dados_master_consolidado.xlsx', index=False)
-
         towrite = BytesIO()
         df.to_excel(towrite, index=False)
         towrite.seek(0) 
