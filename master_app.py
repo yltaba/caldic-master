@@ -11,13 +11,13 @@ uploaded_file = st.file_uploader("Inclua o arquivo Excel com os dados da Master"
 
 nome_aba = [
     "LATAM", "LATAM Managerial", 
-    # "LAS",  "Brazil", "Goaltech", "Corporate LAS", 
-    # "Corp LAS Brazil", "Corp LAS China", "Argentina", "Chile", "LAN", "Corporate LAN", 
-    # "Corp LAN Bogota", "Quimicos Basicos", "Corp LAN CSC", "Corp LAN Houston", "Corp LAN China",
-    # "PCM", "TPC", "Mexico", "CENAM", "Cluster CENAM", "Guatemala", "Honduras", "El Salvador", 
-    # "Nicaragua", "Costa Rica", "Panama", "ANDEAN", "Cluster ANDEAN", "Colombia", "Peru", "Ecuador", 
-    # "Corporate LATAM", "Corporate SP", "Corporate Holding", "Corporate Brazil", "GTM Espanha", "TMLA", 
-    # "Sotro", "AJ", "Corporate Houston", "GTMI-CP", "M&A", "Active", "Bring"
+    "LAS",  "Brazil", "Goaltech", "Corporate LAS", 
+    "Corp LAS Brazil", "Corp LAS China", "Argentina", "Chile", "LAN", "Corporate LAN", 
+    "Corp LAN Bogota", "Quimicos Basicos", "Corp LAN CSC", "Corp LAN Houston", "Corp LAN China",
+    "PCM", "TPC", "Mexico", "CENAM", "Cluster CENAM", "Guatemala", "Honduras", "El Salvador", 
+    "Nicaragua", "Costa Rica", "Panama", "ANDEAN", "Cluster ANDEAN", "Colombia", "Peru", "Ecuador", 
+    "Corporate LATAM", "Corporate SP", "Corporate Holding", "Corporate Brazil", "GTM Espanha", "TMLA", 
+    "Sotro", "AJ", "Corporate Houston", "GTMI-CP", "M&A", "Active", "Bring"
 ]
 
 def tratar_master(uploaded_file, sheet_name, range_cols, origem):
