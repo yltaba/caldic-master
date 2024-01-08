@@ -102,5 +102,5 @@ if uploaded_file and st.button('Consolidar arquivos'):
                 file_name='dados_master_consolidado.xlsx',
                 mime="application/vnd.ms-excel")
 
-st.dataframe(df)
+        st.dataframe(df)
 
