@@ -2,7 +2,21 @@ import pandas as pd
 import streamlit as st
 from io import BytesIO
 
-# st.set_option('server.maxUploadSize', 400)
+def tratar_master(df, origem):
+    df = df.dropna(axis ='index', how='all')
+    df['Type'] = origem
+    df = df.rename(columns={"USD 000'":'Line'})
+    df  = pd.melt(
+        df,
+        id_vars=['Line', 'Type'],
+        value_name='usd_000',
+        var_name='Month'
+    )
+    return df
+
+# inicialização do estado
+if 'file_processed' not in st.session_state:
+    st.session_state['file_processed'] = False
 
 st.title("Gerador base consolidada Master")
 st.subheader("Caldic LATAM - FP&A")
@@ -20,87 +34,141 @@ nome_aba = [
     "Sotro", "AJ", "Corporate Houston", "GTMI-CP", "M&A", "Active", "Bring"
 ]
 
-def tratar_master(uploaded_file, sheet_name, range_cols, origem):
 
-    df = pd.read_excel(
-        uploaded_file,
-        sheet_name,
-        header = 1,
-        skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
-        nrows = 126,
-        usecols = range_cols
-    )
+if uploaded_file:
+    if st.button('Carregar arquivos'):
+        try:
+            range_cols_actual = "B,V:AG"
+            sheets_actual = pd.read_excel(
+                    uploaded_file,
+                    sheet_name=nome_aba,
+                    header = 1,
+                    skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
+                    nrows = 126,
+                    usecols = range_cols_actual
+            )
+            range_cols_forecast = "B,AK:AV" 
+            sheets_forecast = pd.read_excel(
+                    uploaded_file,
+                    sheet_name=nome_aba,
+                    header = 1,
+                    skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
+                    nrows = 126,
+                    usecols = range_cols_forecast
+            )
+            range_cols_budget = "B,AZ:BK"
+            sheets_budget = pd.read_excel(
+                    uploaded_file,
+                    sheet_name=nome_aba,
+                    header = 1,
+                    skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
+                    nrows = 126,
+                    usecols = range_cols_budget
+            )
 
-    df = df.dropna(axis ='index', how='all')
+            range_cols_actual22 = "B,BO:BZ" 
+            sheets_actual22 = pd.read_excel(
+                    uploaded_file,
+                    sheet_name=nome_aba,
+                    header = 1,
+                    skiprows = lambda x: x in [1,2,3,4,6,7,8,9,10],
+                    nrows = 126,
+                    usecols = range_cols_actual22
+            )
 
-    df['Type'] = origem
+            st.session_state['sheets_actual'] = sheets_actual
+            st.session_state['sheets_forecast'] = sheets_forecast
+            st.session_state['sheets_budget'] = sheets_budget
+            st.session_state['sheets_actual22'] = sheets_actual22
 
-    df = df.rename(columns={"USD 000'":'Line'})
+            st.success("Arquivo carregado com sucesso!")
+            st.session_state['file_processed'] = True
 
-    df  = pd.melt(
-        df,
-        id_vars=['Line', 'Type'],
-        value_name='usd_000',
-        var_name='Month'
-    )
-
-    return df
-
-if uploaded_file and st.button('Consolidar arquivos'):
-    with st.spinner('Consolidando arquivos...'):
-
-        # ACTUAL
-        dataframes_actual = {}
-        range_cols = "B,V:AG" 
-        for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Actual')
-            df['nome_aba'] = aba
-            dataframes_actual[aba] = df
-        actual = pd.concat(dataframes_actual.values(), ignore_index=True)
-
-        # FORECAST
-        dataframes_forecast = {}
-        range_cols = "B,AK:AV" 
-        for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Forecast')
-            df['nome_aba'] = aba
-            dataframes_forecast[aba] = df
-        forecast = pd.concat(dataframes_forecast.values(), ignore_index=True)
-
-        # BUDGET
-        dataframes_budget = {}
-        range_cols = "B,AZ:BK" 
-        for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Budget')
-            df['nome_aba'] = aba
-            dataframes_budget[aba] = df
-        budget = pd.concat(dataframes_budget.values(), ignore_index=True)
-
-        # ACTUAL 22
-        dataframes_actual22 = {}
-        range_cols = "B,BO:BZ" 
-        for aba in nome_aba:
-            df = tratar_master(uploaded_file, aba, range_cols, 'Actual 2022')
-            df['nome_aba'] = aba
-            dataframes_actual22[aba] = df
-        actual22 = pd.concat(dataframes_actual22.values(), ignore_index=True)
-
-        # CONSOLIDAÇÃO 
-        df = pd.concat([actual, forecast, budget, actual22], axis=0)
-        df['Month'] = pd.to_datetime(df['Month']).dt.strftime('%d-%m-%Y')
-        df = df.loc[df.usd_000 != '-'].copy()
-        df = df.loc[~((df.Line == 'Non-recurring') & (df.usd_000 > 0))].copy()
+        except Exception as e:
+            str.error(f"Erro ao processar o arquivo: {e}")
 
 
-        # EXPORT EXCEL
-        towrite = BytesIO()
-        df.to_excel(towrite, index=False)
-        towrite.seek(0)
+if st.session_state.get('file_processed'):
+    if st.button('Consolidar arquivo'):
+        with st.spinner('Consolidando arquivos...'):
+            try:
 
-        st.download_button(label="📥 Download Excel Consolidado",
-                data=towrite,
-                file_name='dados_master_consolidado.xlsx',
-                mime="application/vnd.ms-excel")
+                sheets_actual = st.session_state.get('sheets_actual')
+                sheets_forecast = st.session_state.get('sheets_forecast')
+                sheets_budget = st.session_state.get('sheets_budget')
+                sheets_actual22 = st.session_state.get('sheets_actual22')
 
-        st.dataframe(df)
+                # Check if the sheets are available
+                if sheets_actual is None or sheets_forecast is None or \
+                   sheets_budget is None or sheets_actual22 is None:
+                    st.error("Erro: dados não carregados corretamente.")
+                
+                # ACTUAL
+                dataframes_actual = {}
+                for aba in nome_aba:
+                    df = sheets_actual[aba]
+                    df = tratar_master(df, 'Actual 2023')
+                    df['nome_aba'] = aba
+                    dataframes_actual[aba] = df
+                actual = pd.concat(dataframes_actual.values(), ignore_index=True)
+
+                # FORECAST
+                dataframes_forecast = {}
+                for aba in nome_aba:
+                    df = sheets_forecast[aba]
+                    df = tratar_master(df, 'Forecast')
+                    df['nome_aba'] = aba
+                    dataframes_forecast[aba] = df
+                forecast = pd.concat(dataframes_forecast.values(), ignore_index=True)
+
+                # BUDGET
+                dataframes_budget = {}
+                for aba in nome_aba:
+                    df = sheets_budget[aba]
+                    df = tratar_master(df, 'Budget')
+                    df['nome_aba'] = aba
+                    dataframes_budget[aba] = df
+                budget = pd.concat(dataframes_budget.values(), ignore_index=True)
+
+                # ACTUAL 22
+                dataframes_actual22 = {}
+                for aba in nome_aba:
+                    df = sheets_actual22[aba]
+                    df = tratar_master(df, 'Actual 2022')
+                    df['nome_aba'] = aba
+                    dataframes_actual22[aba] = df
+                actual22 = pd.concat(dataframes_actual22.values(), ignore_index=True)
+
+                # CONSOLIDAÇÃO 
+                df = pd.concat([actual, forecast, budget, actual22], axis=0)
+                df['Month'] = pd.to_datetime(df['Month']).dt.strftime('%d-%m-%Y')
+                df = df.loc[df.usd_000 != '-'].copy()
+                df = df.loc[~((df.Line == 'Non-recurring') & (df.usd_000 > 0))].copy()
+
+                st.success("Arquivos consolidados com sucesso!")
+
+                # EXPORT EXCEL
+                towrite = BytesIO()
+                df.to_excel(towrite, index=False)
+                towrite.seek(0)
+
+                st.dataframe(df)
+
+                st.download_button(label="📥 Download Excel Consolidado",
+                        data=towrite,
+                        file_name='dados_master_consolidado.xlsx',
+                        mime="application/vnd.ms-excel")
+        
+                st.session_state['file_processed'] = False
+            
+            except Exception as e:
+                st.error(f"Erro na consolidação: {e}")
+
+
+
+
+
+
+
+
 
