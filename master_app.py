@@ -145,14 +145,14 @@ if st.session_state.get('file_processed'):
                 df = df.loc[df.usd_000 != '-'].copy()
                 df = df.loc[~((df.Line == 'Non-recurring') & (df.usd_000 > 0))].copy()
 
-                st.success("Arquivos consolidados com sucesso!")
-
                 # EXPORT EXCEL
                 towrite = BytesIO()
                 df.to_excel(towrite, index=False)
                 towrite.seek(0)
 
                 st.dataframe(df)
+
+                st.success("Arquivos consolidados com sucesso!")
 
                 st.download_button(label="📥 Download Excel Consolidado",
                         data=towrite,
