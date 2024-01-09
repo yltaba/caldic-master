@@ -20,6 +20,12 @@ if 'file_processed' not in st.session_state:
 
 st.title("Gerador base consolidada Master")
 st.subheader("Caldic LATAM - FP&A")
+with st.expander("Como usar:"):
+    st.write("""
+             Carregue o arquivo Excel da Master no campo indicado.
+             Clique em "Carregar arquivo" e aguarde a execução.
+             Ao fim do processamento do arquivo, clique em "Consolidar arquivo" para gerar a base consolidada da Master"
+            """)
 
 uploaded_file = st.file_uploader("Inclua o arquivo Excel com os dados da Master", type=['xlsx'])
 
@@ -81,7 +87,7 @@ if uploaded_file:
             st.session_state['sheets_budget'] = sheets_budget
             st.session_state['sheets_actual22'] = sheets_actual22
 
-            st.success("Arquivo carregado com sucesso!")
+            st.success("Carregado!")
             st.session_state['file_processed'] = True
 
         except Exception as e:
