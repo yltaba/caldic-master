@@ -18,8 +18,9 @@ def tratar_master(df, origem):
 if 'file_processed' not in st.session_state:
     st.session_state['file_processed'] = False
 
+st.image('inputs/CALDIC_Logo_Orange_RGB.jpg', width=250)
 st.title("Gerador base consolidada Master")
-st.subheader("Caldic LATAM - FP&A")
+st.subheader("FP&A")
 with st.expander("Como usar:"):
     st.write("""
              Carregue o arquivo Excel da Master no campo indicado.
