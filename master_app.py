@@ -25,9 +25,9 @@ with st.expander("Como usar:"):
     st.write("""
              Carregue o arquivo Excel da Master no campo indicado.
 
-             Clique em "Carregar arquivo" e aguarde a execução.
+             Clique em "Carregar e processar arquivo" e aguarde a execução.
              
-             Ao fim do processamento do arquivo, clique em "Consolidar arquivo" para gerar a base consolidada da Master
+             Ao final da execução, clique em "Download Excel Consolidado" para descarregar o arquivo processado.
             """)
 
 uploaded_file = st.file_uploader("Inclua o arquivo Excel com os dados da Master", type=['xlsx'])
