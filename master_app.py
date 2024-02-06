@@ -19,7 +19,7 @@ if 'file_processed' not in st.session_state:
     st.session_state['file_processed'] = False
 
 st.image('inputs/CALDIC_Logo_Orange_RGB.jpg', width=250)
-st.title("Gerador base consolidada Master")
+st.title("Master Structured File Generator")
 st.subheader("FP&A")
 with st.expander("Como usar:"):
     st.write("""
@@ -45,7 +45,7 @@ nome_aba = [
 
 
 if uploaded_file:
-    if st.button('Carregar arquivos'):
+    if st.button('Carregar e processar arquivo'):
         try:
             range_cols_actual = "B,V:AG"
             sheets_actual = pd.read_excel(
@@ -94,14 +94,11 @@ if uploaded_file:
             st.session_state['file_processed'] = True
 
         except Exception as e:
-            str.error(f"Erro ao processar o arquivo: {e}")
+            str.error(f"Erro ao carregar o arquivo: {e}")
 
 
-if st.session_state.get('file_processed'):
-    if st.button('Consolidar arquivo'):
         with st.spinner('Consolidando arquivos...'):
             try:
-
                 sheets_actual = st.session_state.get('sheets_actual')
                 sheets_forecast = st.session_state.get('sheets_forecast')
                 sheets_budget = st.session_state.get('sheets_budget')
@@ -171,13 +168,4 @@ if st.session_state.get('file_processed'):
                 st.session_state['file_processed'] = False
             
             except Exception as e:
-                st.error(f"Erro na consolidação: {e}")
-
-
-
-
-
-
-
-
-
+                st.error(f"Erro ao processar o arquivo final: {e}")
